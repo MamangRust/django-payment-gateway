@@ -1,0 +1,14 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  {% include 'layouts/admin/head.html' %}
+  <body>
+    <script src="{% static 'static/js/initTheme.js'%}"></script>
+
+    <div id="app">{% include 'layouts/admin/sidebar.html' %}</div>
+
+    <div id="main">{% block content %} {% endblock %}</div>
+
+    {% block script %} {% endblock %}
+  </body>
+</html>

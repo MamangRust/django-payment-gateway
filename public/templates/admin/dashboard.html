@@ -1,0 +1,167 @@
+{% extends "layouts/admin/base.html" %}
+<div>
+  {% block content %}
+  <header class="mb-3">
+    <a href="#" class="burger-btn d-block d-xl-none">
+      <i class="bi bi-justify fs-3"></i>
+    </a>
+  </header>
+  <div class="page-heading">
+    <h3>Profile Statistics</h3>
+  </div>
+  <div class="page-content">
+    <section class="row">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-6 col-lg-3 col-md-6">
+            <div class="card">
+              <div class="card-body px-4 py-4-5">
+                <div class="row">
+                  <div
+                    class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start"
+                  >
+                    <div class="stats-icon purple mb-2">
+                      <i class="iconly-boldShow"></i>
+                    </div>
+                  </div>
+                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                    <h6 class="text-muted font-semibold">Saldo User</h6>
+                    <h6 class="font-extrabold mb-0">{{saldo_user_count}}</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3 col-md-6">
+            <div class="card">
+              <div class="card-body px-4 py-4-5">
+                <div class="row">
+                  <div
+                    class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start"
+                  >
+                    <div class="stats-icon blue mb-2">
+                      <i class="iconly-boldProfile"></i>
+                    </div>
+                  </div>
+                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                    <h6 class="text-muted font-semibold">Transfer</h6>
+                    <h6 class="font-extrabold mb-0">{{transfer_count}}</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3 col-md-6">
+            <div class="card">
+              <div class="card-body px-4 py-4-5">
+                <div class="row">
+                  <div
+                    class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start"
+                  >
+                    <div class="stats-icon green mb-2">
+                      <i class="iconly-boldAdd-User"></i>
+                    </div>
+                  </div>
+                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                    <h6 class="text-muted font-semibold">Topup</h6>
+                    <h6 class="font-extrabold mb-0">{{topups_count}}</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3 col-md-6">
+            <div class="card">
+              <div class="card-body px-4 py-4-5">
+                <div class="row">
+                  <div
+                    class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start"
+                  >
+                    <div class="stats-icon red mb-2">
+                      <i class="iconly-boldBookmark"></i>
+                    </div>
+                  </div>
+                  <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                    <h6 class="text-muted font-semibold">Total Topup Amount</h6>
+                    <h6 class="font-extrabold mb-0">{{total_topup_amount}}</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+            <div class="card">
+              <div class="card-header">
+                <h4>Yearly Revenue</h4>
+              </div>
+              <div class="card-body">
+                <div id="chart-yearly-revenue"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="card">
+              <div class="card-header">
+                <h4>Total Revenue</h4>
+              </div>
+              <div class="card-body">
+                <div id="chart-total-revenue"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  {% endblock content %} {% load static %} {% block script %}
+  <script src="{% static 'static/js/components/dark.js' %}"></script>
+  <script src="{% static 'extensions/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+
+  <script src="{% static 'compiled/js/app.js' %}"></script>
+
+  <!-- Need: Apexcharts -->
+  <script src="{% static 'extensions/apexcharts/apexcharts.min.js'%}"></script>
+  <script>
+    var yearlyRevenueData = {{ yearly_revenue }};
+    var topup_method_usage_data = JSON.parse('{{ topup_method_usage | escapejs }}');
+
+
+
+
+    var optionsYearlyRevenue = {
+        chart: {
+            type: 'bar',
+            height: 300,
+        },
+        series: [{
+            name: 'Yearly Revenue',
+            data: yearlyRevenueData,
+        }],
+        xaxis: {
+            categories: [
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+            ],
+        },
+    };
+
+    var optionsTotalRevenue = {
+        series: Object.values(topup_method_usage_data),
+        chart: {
+          type: 'donut',
+          width: '100%',
+          height: '350px',
+        },
+        labels: Object.keys(topup_method_usage_data),
+      };
+
+
+    var chartYearlyRevenue = new ApexCharts(document.querySelector("#chart-yearly-revenue"), optionsYearlyRevenue);
+    var chartTotalRevenue = new ApexCharts(document.querySelector("#chart-total-revenue"), optionsTotalRevenue);
+
+    chartYearlyRevenue.render();
+    chartTotalRevenue.render();
+  </script>
+  {% endblock %}
+</div>
